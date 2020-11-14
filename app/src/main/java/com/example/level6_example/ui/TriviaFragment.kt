@@ -6,13 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.level6_example.R
+import kotlinx.android.synthetic.main.fragment_trivia.*
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class TriviaFragment : Fragment() {
+    private val viewModel: TriviaViewModel by activityViewModels()
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -25,8 +30,18 @@ class TriviaFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<Button>(R.id.button_first).setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
-        }
+        observeTrivia()
     }
+
+    private fun observeTrivia() {
+        viewModel.trivia.observe(viewLifecycleOwner, Observer {
+            tvTrivia.text = it?.text
+        })
+
+        // Observe the error message.
+        viewModel.errorText.observe(viewLifecycleOwner, Observer {
+            Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
+        })
+    }
+
 }
